@@ -99,7 +99,7 @@ bool RuleRemover :: poly_handle(OrderingProblem *prob, Alphabet &F,
   pols.set_use_products(products);
   vector<int> ok = pols.orient(prob);
   map<string,int> arities = prob->arities;
-  
+
   if (ok.size() != 0) {
     wout.print("We can thus remove the following rules:\n");
     vector<MatchRule*> Rok;
@@ -136,7 +136,7 @@ bool RuleRemover :: horpo_handle(OrderingProblem *prob, Alphabet &F,
   // use the horpo-tool!
   vector<int> ok = horpo.orient(prob);
   map<string,int> arities = prob->arities;
-  
+
   if (ok.size() != 0) {
     wout.print("We can thus remove the following rules:\n");
     vector<MatchRule*> Rok;

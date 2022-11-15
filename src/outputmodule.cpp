@@ -637,7 +637,7 @@ string OutputModule :: print_term(PTerm term, ArList &arities,
                                   map<int,string> &freenaming,
                                   map<int,string> &boundnaming,
                                   bool brackets) {
-  
+
   // deal with variables, both bound and free
   if (term->query_variable()) {
     PVariable x = dynamic_cast<PVariable>(term);
@@ -836,11 +836,13 @@ string OutputModule :: get_extension(string filename) {
 void OutputModule :: print_alphabet(Alphabet &Sigma, ArList &arities) {
   start_table();
   ArList::iterator it;
+
   for (it = arities.begin(); it != arities.end(); it++) {
     vector<string> entries;
     entries.push_back(it->first);
     entries.push_back(":");
     entries.push_back(print_typedec(Sigma.query_type(it->first), it->second));
+    entries.push_back(";");
     table_entry(entries);
   }
   end_table();
@@ -861,7 +863,7 @@ void OutputModule :: print_rules(vector<MatchRule*> &rules,
            arities, Sigma, metanaming, freenaming, boundnaming));
     table_entry(entry);
   }
-  
+
   wout.end_table();
 }
 
@@ -886,11 +888,11 @@ void OutputModule :: print_system(Alphabet &Sigma,
 
   ArList arities = arities_for_system(Sigma, rules);
   start_box();
-  print_header("Alphabet:");
+  print_header("Signature:");
   print_alphabet(Sigma, arities);
   print_header("Rules:");
   print_rules(rules, Sigma, arities);
-  
+
   end_box();
 }
 
@@ -1004,7 +1006,7 @@ void OutputModule :: print_DPs(vector<DependencyPair*> &dps,
 
     table_entry(entry);
   }
-  
+
   wout.end_table();
 }
 

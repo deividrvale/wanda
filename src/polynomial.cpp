@@ -177,7 +177,7 @@ string Polvar :: to_string(map<int,int> &freerename,
                            map<int,int> &boundrename,
                            bool brackets) {
   char tmp[10];
-  
+
   if (boundrename.find(index) != boundrename.end()) {
     sprintf(tmp, "y%d", boundrename[index]);
     return string(tmp);
@@ -319,7 +319,7 @@ PPol Functional :: replace_unknowns(map<int,PPol> &substitution) {
 
 PPol Functional :: apply_substitution(PolynomialSubstitution &subst) {
   int i;
-  
+
   for (i = 0; i < args.size(); i++) {
     args[i]->replace_polynomial(
       args[i]->get_polynomial()->apply_substitution(subst));
@@ -1049,7 +1049,7 @@ void PolynomialFunction :: calculate_type() {
 
 string PolynomialFunction :: to_string() {
   if (variables.size() == 0) return p->to_string();
-  string ret = "\\";
+  string ret = "Lam";
   for (int i = 0; i < variables.size(); i++) {
     char tmp[10];
     sprintf(tmp, "%c%d",
@@ -1060,26 +1060,30 @@ string PolynomialFunction :: to_string() {
   return ret + "." + p->to_string();
 }
 
+// <deivid>
 string PolynomialFunction :: to_string(map<int,int> &freerename,
                                        map<int,int> &boundrename) {
   if (variables.size() == 0)
     return p->to_string(freerename, boundrename);
-  
-  string ret = "\\";
-  int i;
 
-  for (i = 0; i < variables.size(); i++) {
+  string ret = "Lam[";
+
+  for (int i = 0; i < variables.size(); i++) {
     int k = boundrename.size();
     boundrename[variables[i]] = k;
-    char tmp[10];
-    sprintf(tmp, "%c%d",
-      variable_types[i]->query_data() ? 'y' : 'G', k);
-    ret += string(tmp);
+    char tmp[100];
+    char t = variable_types[i]->query_data() ? 'y' : 'G';
+    sprintf(tmp, "%c%d",t,k);
+
+  // after each variable name there is a ";" list separator
+  ret += string(tmp) + ";";
   }
+  // We then remove the last one and append the end of list symbol.
+  ret.pop_back(); ret += "]";
 
   ret += "." + p->to_string(freerename, boundrename);
 
-  for (i = 0; i < variables.size(); i++) {
+  for (int i = 0; i < variables.size(); i++) {
     boundrename.erase(variables[i]);
   }
 

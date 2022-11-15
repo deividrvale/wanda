@@ -71,7 +71,7 @@ MonomorphicAFS :: ~MonomorphicAFS() {
 void MonomorphicAFS :: recalculate_arity() {
   if (!normalised) return;
   ArList oldars;
-  
+
   // assign default (maximal) arities
   vector<string> symbs = Sigma.get_all();
   for (int i = 0; i < symbs.size(); i++) {
@@ -80,7 +80,7 @@ void MonomorphicAFS :: recalculate_arity() {
     arities[symbs[i]] = f->query_max_arity();
     delete f;
   }
-  
+
   // make sure they respect the rules
   for (int j = 0; j < lhs.size(); j++) {
     adjust_arities(lhs[j]);
@@ -114,7 +114,7 @@ void MonomorphicAFS :: recalculate_arity_eta() {
     arities[symbs[i]] = f->query_max_arity();
     delete f;
   }
-  
+
   // make sure they respect the left-hand sides
   for (int j = 0; j < lhs.size(); j++) {
     adjust_arities(lhs[j]);
@@ -134,7 +134,7 @@ void MonomorphicAFS :: adjust_arities(PTerm s) {
     if (s->number_children() >= 2) adjust_arities(s->get_child(1));
     return;
   }
-  
+
   // it's headed by a constant
   vector<PTerm> parts = s->split();
   PConstant f = dynamic_cast<PConstant>(parts[0]);
@@ -175,7 +175,7 @@ PTerm MonomorphicAFS :: respect_arity(PTerm term, bool ignoretop) {
     PTerm sub1 = respect_arity(term->subterm("1"), true);
     term->replace_subterm(sub2, "1");
   }
-  
+
   return term;
 }
 
@@ -303,9 +303,11 @@ string MonomorphicAFS :: to_string() {
 
 void MonomorphicAFS :: pretty_print() {
   wout.start_box();
-  wout.print_header("Alphabet:");
+//   <formal>
+  wout.print_header("Signature: [");
   wout.print_alphabet(Sigma, arities);
-  wout.print_header("Rules:");
+  wout.print_header("]");
+  wout.print_header("Rules: [");
 
   wout.start_table();
 
@@ -319,10 +321,11 @@ void MonomorphicAFS :: pretty_print() {
     entry.push_back(wout.print_term(rhs[i], arities, Sigma,
                                     metanaming, freenaming,
                                     boundnaming));
+    entry.push_back(";");
     wout.table_entry(entry);
   }
-
   wout.end_table();
+  wout.print_header("]");
   wout.end_box();
 }
 
@@ -402,7 +405,7 @@ bool MonomorphicAFS :: check_normal() {
 
 vector<PVariable> MonomorphicAFS :: find_free_head_variables(PTerm l,
                                                      Varset &bound) {
-  
+
   vector<PVariable> vars;
 
   // not an application, and no subterms
@@ -433,7 +436,7 @@ vector<PVariable> MonomorphicAFS :: find_free_head_variables(PTerm l,
 }
 
 void MonomorphicAFS :: mark_leading_abstraction_types(PTerm s) {
-  
+
   if (s->query_abstraction())
     mark_leading_abstraction_types(s->subterm("1"));
 
