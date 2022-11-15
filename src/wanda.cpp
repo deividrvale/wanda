@@ -55,7 +55,7 @@ void Wanda :: run(vector<string> args) {
     }
 
     // read the system
-    wout.print("We consider the system " +
+    wout.verbose_print("We consider the system " +
       wout.parse_filename(args[i]) + ".\n");
     read_system(args[i]);
     if (error != "") {

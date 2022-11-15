@@ -328,7 +328,7 @@ void OutputModule :: print_output(string filename) {
 
   if (verbose && !html) return;
 
-  string output = methods[0].output + make_citelist();
+  string output = methods[0].output;
   if (html) output = html_layout(output);
   else output = plain_layout(output);
 
@@ -842,7 +842,10 @@ void OutputModule :: print_alphabet(Alphabet &Sigma, ArList &arities) {
     entries.push_back(it->first);
     entries.push_back(":");
     entries.push_back(print_typedec(Sigma.query_type(it->first), it->second));
-    entries.push_back(";");
+    // if not on the last iterator, then print the list separator ;
+    if(!((it != arities.end()) && (next(it) == arities.end()))) {
+        entries.push_back(";");
+    }
     table_entry(entries);
   }
   end_table();
@@ -861,6 +864,7 @@ void OutputModule :: print_rules(vector<MatchRule*> &rules,
     entry.push_back(rule_arrow());
     entry.push_back(print_term(rules[i]->query_right_side(),
            arities, Sigma, metanaming, freenaming, boundnaming));
+    if((i + 1) < rules.size()) entry.push_back(";");
     table_entry(entry);
   }
 

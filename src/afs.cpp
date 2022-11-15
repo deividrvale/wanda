@@ -212,8 +212,8 @@ void MonomorphicAFS :: to_afsm(Alphabet &F,
     wout.print_system(Sigma, rules);
   }
   else {
-    wout.print("This AFS is converted to an AFSM simply by replacing "
-      "all free variables by meta-variables (with arity 0).\n\n");
+    wout.print("(** This AFS is converted to an AFSM simply by replacing "
+      "all free variables by meta-variables (with arity 0). **) \n ");
   }
 }
 
@@ -321,7 +321,7 @@ void MonomorphicAFS :: pretty_print() {
     entry.push_back(wout.print_term(rhs[i], arities, Sigma,
                                     metanaming, freenaming,
                                     boundnaming));
-    entry.push_back(";");
+    if( (i + 1) < lhs.size()) entry.push_back(";");
     wout.table_entry(entry);
   }
   wout.end_table();

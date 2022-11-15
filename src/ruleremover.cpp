@@ -34,7 +34,7 @@ bool RuleRemover :: remove_rules(Alphabet &F, Ruleset &R) {
 
   while (true) {
     wout.start_method("rule removal");
-    wout.print("We use rule removal, following " +
+    wout.verbose_print("We use rule removal, following " +
       wout.cite("Kop12", "Theorem 2.23") + ".\n");
     if (attempt_rule_removal(F, R)) {
       removed_something = true;
@@ -46,7 +46,7 @@ bool RuleRemover :: remove_rules(Alphabet &F, Ruleset &R) {
     }
     if (R.empty()) {
       if (removed_something)
-        wout.print("All rules were succesfully removed.  Thus, "
+        wout.verbose_print("All rules were succesfully removed.  Thus, "
           "termination of the original system has been reduced to "
           "termination of the beta-rule, which is well-known to "
           "hold.\n");
@@ -61,12 +61,12 @@ bool RuleRemover :: attempt_rule_removal(Alphabet &F, Ruleset &R) {
   vars.reset();
   OrderingProblem *prob = new PlainOrderingProblem(R, F);
 
-  wout.print("This gives the following requirements (possibly using "
+  wout.verbose_print("This gives the following requirements (possibly using "
     "Theorems 2.25 and 2.26 in " + wout.cite("Kop12") + "):\n");
-  prob->print();
+//   prob->print();
 
-  // try rule removal with linear polynomial interpretations
-  if (use_poly && poly_handle(prob, F, R, false))
+  // try rule removal with linear polynomial interpretations and products allowed
+  if (use_poly && poly_handle(prob, F, R, true))
     return true;
 
   wout.verbose_print("About to try horpo.\n");
@@ -101,14 +101,16 @@ bool RuleRemover :: poly_handle(OrderingProblem *prob, Alphabet &F,
   map<string,int> arities = prob->arities;
 
   if (ok.size() != 0) {
-    wout.print("We can thus remove the following rules:\n");
+    wout.verbose_print("We can thus remove the following rules:\n");
     vector<MatchRule*> Rok;
     int j;
     for (j = 0; j < ok.size(); j++) {
       Rok.push_back(R[ok[j]]);
       R[ok[j]] = NULL;
     }
+    wout.print_header("Removed: [");
     wout.print_rules(Rok, F, arities);
+    wout.print_header("]");
     for (j = 0; j < Rok.size(); j++) delete Rok[j];
     wout.print("\n");
     Ruleset Rmod;
@@ -138,7 +140,7 @@ bool RuleRemover :: horpo_handle(OrderingProblem *prob, Alphabet &F,
   map<string,int> arities = prob->arities;
 
   if (ok.size() != 0) {
-    wout.print("We can thus remove the following rules:\n");
+    wout.verbose_print("We can thus remove the following rules:\n");
     vector<MatchRule*> Rok;
     int j;
     for (j = 0; j < ok.size(); j++) {

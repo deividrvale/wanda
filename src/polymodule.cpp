@@ -50,7 +50,7 @@ vector<int> PolyModule :: orient(OrderingProblem *prob) {
 
   string attempt = "";
   if (wout.query_verbose()) attempt = "will attempt to ";
-  wout.print("We " + attempt + "orient these requirements with a "
+  wout.verbose_print("We " + attempt + "orient these requirements with a "
     "polynomial interpretation in the natural numbers.\n");
   if (wout.query_verbose() && !do_base_products)
     wout.print("We will not try to use product polynomials.\n");
@@ -211,7 +211,7 @@ void PolyModule :: choose_interpretations() {
     for (j = 0; type->query_composed(); j++) {
       PType argtype = type->query_child(0);
       type = type->query_child(1);
-      
+
       // argtype could be base-type, second-order or higher
       if (argtype->query_data()) {
         baseargs.push_back(j);
@@ -247,7 +247,7 @@ void PolyModule :: choose_interpretations() {
       varname.push_back(unused_polvar_index());
     }
 
-    // initalize the interpretation for the symbol    
+    // initalize the interpretation for the symbol
     Sum *intp = new Sum();
     Unknown *sumbase = new_unknown();
     intp->add_child(sumbase);
@@ -307,7 +307,7 @@ void PolyModule :: choose_interpretations() {
         }
       }
     }
-    
+
     // deal with the second-order arguments
     if (!special) for (j = 0; j < funargs.size(); j++) {
       int k = funargs[j];
@@ -319,7 +319,7 @@ void PolyModule :: choose_interpretations() {
       // create a * F(0,...,0)
       for (int l = 0; l < n; l++) args.push_back(new Integer(0));
       intp->add_child(new Product(a, new Functional(varname[k], args)));
-      
+
       // don't use this if F is filtered away, and use this or one of
       // the b * F(x1,...,xn) occurrences if not
       filter_check(f, k, a);
@@ -514,7 +514,7 @@ void PolyModule :: interpret_requirements() {
         reqs[i]->orient_at_all()->negate(), new Var(varnum)));
     }
   }
-  
+
   if (wout.query_verbose()) {
     wout.end_table();
   }
@@ -526,7 +526,7 @@ PolynomialFunction *PolyModule :: interpret(PTerm term,
   vector<PolynomialFunction*> args;
   vector<int> varids;
   vector<PType> vartypes;
-  
+
   while (type->query_composed()) {
     int id = unused_polvar_index();
     PType argtype = type->query_child(0);
@@ -614,7 +614,7 @@ PPol PolyModule :: interpret(PTerm term, map<int,PolynomialFunction*>
       realargs.push_back(interpret(parts[i], subst));
     realargs.insert(realargs.end(), args.begin(), args.end());
     ret = main->apply(realargs);
-    
+
     // if necessary, add the applied symbols too, or use Max
     bool make_application = false;
     int start_at = 0;
@@ -663,24 +663,32 @@ vector<int> PolyModule :: get_solution() {
   problem->justify_orientables();
 
   // replace all unknowns in the interpretations and print
-  wout.print("The following interpretation satisfies the requirements:\n");
-  wout.start_table();
-  for (map<string,PolynomialFunction*>::iterator ti =
-       interpretations.begin(); ti != interpretations.end(); ti++) {
-    ti->second->replace_unknowns(substitution);
-    map<int,int> freerename, boundrename;
-    vector<string> columns;
-    columns.push_back(ti->first);
-    columns.push_back("=");
-    columns.push_back(wout.print_polynomial_function(ti->second,
-                                      freerename, boundrename));
-    wout.table_entry(columns);
-  }
-  wout.end_table();
+  wout.verbose_print("The following interpretation satisfies the requirements:\n");
+  wout.start_box();
+    wout.print_header("Interpretation: [");
+    wout.start_table();
+    for (map<string,PolynomialFunction*>::iterator ti =
+        interpretations.begin(); ti != interpretations.end(); ti++) {
+        ti->second->replace_unknowns(substitution);
+        map<int,int> freerename, boundrename;
+        vector<string> columns;
+        columns.push_back("J(" + ti->first + ")");
+        columns.push_back("=");
+        columns.push_back(wout.print_polynomial_function(ti->second,
+                                        freerename, boundrename));
+        if(!((ti != interpretations.end()) && (next(ti) == interpretations.end()))) {
+            columns.push_back(";");
+        }
+        wout.table_entry(columns);
+    }
+    wout.end_table();
+    wout.print_header("]");
+  wout.end_box();
 
   // recalculate the requirements, and determine which are strictly
   // satisfied
-  wout.print("Using this interpretation, the requirements translate to:\n");
+  wout.verbose_print("Using this interpretation, the requirements translate to:\n");
+  wout.print_header("(**");
   wout.start_table();
   vector<OrderRequirement*> reqs = problem->orientables();
   for (i = 0; i < reqs.size(); i++) {
@@ -699,7 +707,7 @@ vector<int> PolyModule :: get_solution() {
 
     interpret_with_information(reqs[i]->left, reqs[i]->right, l, r,
                                metarename);
-  
+
     n = 0;
     choose_meta_namings(reqs[i]->left, gamma,
                         metarename, freerename, n);
@@ -745,6 +753,7 @@ vector<int> PolyModule :: get_solution() {
     wout.table_entry(columns);
   }
   wout.end_table();
+  wout.print_header("**)");
 
   return problem->strictly_oriented();
 }
