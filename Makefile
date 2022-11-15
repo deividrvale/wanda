@@ -49,8 +49,8 @@ all: $(OBJS)
 ifneq (, $(findstring darwin, $(SYS)))
 WANDA_OBJS := $(shell find $(BUILD_DIR) -name '*.cpp.o' ! -name 'converter.cpp.o')
 # Build Wanda Executable macOS.
-$(BIN_DIR)/$(TARGET_EXEC): install_resources build_minisat build_natt $(OBJS) $(WANDA_OBJS)
-	@echo "Building Wanda macOs Executable..."
+$(BIN_DIR)/$(TARGET_EXEC): install_resources_darwin build_minisat build_natt $(OBJS) $(WANDA_OBJS)
+	@echo "Building Wanda macOS Executable..."
 	@$(CXX) $(WANDA_OBJS) -o $@ $(LDFLAGS)
 else ifneq (, $(findstring linux, $(SYS)))
 # Build Wanda Executable Linux.
@@ -66,7 +66,7 @@ endif
 # Build Converter Executable
 CONVERTER_OBJS := $(shell find $(BUILD_DIR) -name '*.cpp.o' ! -name 'wanda.cpp.o')
 $(BIN_DIR)/$(CONVERTER_EXEC): $(CONVERTER_OBJS)
-	@echo 'Building Wanda Executable.\n'
+	@echo "Building Converter Executable..."
 	@mkdir -p $(dir $@)
 	$(CXX) $(CONVERTER_OBJS) -o $@ $(LDFLAGS)
 
@@ -109,6 +109,15 @@ install_resources :
 	@echo "Installing resources to binary folder..."
 	@mkdir -p $(BIN_DIR)
 	cp -r resources $(BIN_DIR)
+
+install_resources_darwin : $(BIN_DIR)/resources/satsolver $(BIN_DIR)/resources/natt/NaTT.exe
+
+$(BIN_DIR)/resources/satsolver $(BIN_DIR)/resources/natt/NaTT.exe :
+	@echo "Installing resources to binary folder..."
+	@mkdir -p $(BIN_DIR)
+	cp -r resources $(BIN_DIR)
+#	Delete these executables after copying as they are for linux.
+	@rm -rf $(BIN_DIR)/resources/satsolver $(BIN_DIR)/resources/natt/NaTT.exe
 
 .PHONY: clean
 clean:
