@@ -801,7 +801,7 @@ bool Product :: query_similar(PPol other, int &a, int &b) {
 string Product :: to_string(bool brackets) {
   string ret;
   for (int i = 0; i < parts.size(); i++) {
-    if (parts[i]->query_integer() && i != 0) ret += "*";
+    // if (parts[i]->query_integer() && i != 0) ret += "*";
     ret += parts[i]->to_string(true);
   }
   if (parts.size() <= 1) ret = "{" + ret + "}";
@@ -812,7 +812,8 @@ string Product :: to_string(map<int,int> &fr, map<int,int> &br,
                             bool brackets) {
   string ret;
   for (int i = 0; i < parts.size(); i++) {
-    if (parts[i]->query_integer() && i != 0) ret += "*";
+    // parts[i]->query_integer () &&
+    if (i != 0) ret += "*";
     ret += parts[i]->to_string(fr, br, true);
   }
   if (parts.size() <= 1) ret = "{" + ret + "}";

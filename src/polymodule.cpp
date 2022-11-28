@@ -61,6 +61,15 @@ vector<int> PolyModule :: orient(OrderingProblem *prob) {
     constraints.add_formula(baseconstraints[i]->copy());
 
   arities = problem->arities;
+
+// <deivid> this set all arities to 0.
+// forcing wanda to use application always
+  map<string, int>:: iterator it;
+  for (it = arities.begin(); it != arities.end(); it++){
+    it->second = 0;
+  }
+
+
   choose_interpretations();
   interpret_requirements();
   constraints.simplify();

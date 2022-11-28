@@ -67,7 +67,9 @@ bool OrderingProblem :: changed_arities(map<string,int> original) {
 }
 
 void OrderingProblem :: require_atleastone(int start, int end) {
-  Or *req = new Or();
+    // <deivid> disable or enable rule removal
+//   Or *req = new Or(); //rule removal is active
+  And *req = new And(); //rule removal is not active
   for (int i = start; i <= end; i++) req->add_child(new Var(i));
   constraints.push_back(req);
 }
@@ -195,7 +197,7 @@ void OrderingProblem :: print() {
 
 PlainOrderingProblem :: PlainOrderingProblem(Ruleset &rules, Alphabet &F)
   :OrderingProblem(rules, F) {
-  
+
   // nothing may be filtered, so just add constraints
   int base = vars.query_size();
   vars.add_vars(rules.size());
@@ -214,7 +216,7 @@ DPOrderingProblem :: DPOrderingProblem(DPSet &dps, Ruleset &rules,
                                        Alphabet &F, bool &use_tagging,
                                        bool use_usable, bool use_formative)
   :OrderingProblem(dps, rules, F, 1), Ccounter(0), metas_extended(true) {
-  
+
   int i;
   map<string,int>::iterator it;
   bool col;
@@ -269,7 +271,7 @@ PConstant DPOrderingProblem :: fresh_constant(PType type) {
 }
 
 bool DPOrderingProblem :: collapsing(DPSet &dps) {
-  for (int i = 0; i < dps.size(); i++) 
+  for (int i = 0; i < dps.size(); i++)
     if (dps[i]->query_right()->query_head()->query_meta())
       return true;
   return false;
@@ -296,10 +298,10 @@ PTerm DPOrderingProblem :: meta_extend(int index, PTerm right) {
   int i;
 
   meta_arities[index] = parts[0]->number_children();
-  
+
   for (i = 0; i < parts[0]->number_children(); i++)
     children.push_back(parts[0]->get_child(i)->copy());
-  for (i = 1; i < parts.size(); i++) 
+  for (i = 1; i < parts.size(); i++)
     children.push_back(parts[i]->copy());
   PVariable Z = dynamic_cast<MetaApplication*>(parts[0])->get_metavar();
   Z = dynamic_cast<PVariable>(Z->copy());
@@ -363,18 +365,18 @@ PTerm DPOrderingProblem :: substitute_variables(PTerm term,
     if (binders.find(x) != binders.end()) return term;
     if (!gamma.contains(x)) {
       gamma[x] = fresh_constant(term->query_type());
-    }   
+    }
     delete term;
     return gamma[x]->copy();
   }
 
-  int bind = -1; 
+  int bind = -1;
   if (term->query_abstraction()) {
     Abstraction *abs = dynamic_cast<Abstraction*>(term);
     bind = abs->query_abstraction_variable()->query_index();
     if (binders.find(bind) == binders.end())
       binders.insert(bind);
-    else bind = -1; 
+    else bind = -1;
   }
 
   for (int i = 0; i < term->number_children(); i++) {
@@ -406,11 +408,11 @@ void DPOrderingProblem :: make_dp_requirements(DPSet &dps) {
       PType inpt = l->query_type()->query_child(0);
       PVariable Z = new Variable(inpt->copy());
       l = new Application(l, new MetaApplication(Z));
-    }   
+    }
     while (r->query_type()->query_composed()) {
       PType inpt = r->query_type()->query_child(0);
       r = new Application(r, fresh_constant(inpt));
-    }   
+    }
     // replace free variables by fresh constants as well
     Substitution gamma;
     set<int> binders;
@@ -434,7 +436,7 @@ void DPOrderingProblem :: make_rule_requirements(Ruleset &rules) {
 
 void DPOrderingProblem :: tag_below_abstraction(PTerm term,
                 bool below_abstraction, map<string,string> &tagged) {
-  
+
   // if we're not currently below an abstraction, we don't need to do
   // much - just delegate to the children!
   if (!below_abstraction) {
@@ -487,7 +489,7 @@ void DPOrderingProblem :: handle_untagged_case(DPSet &dps) {
   }
   for (set<string>::iterator si = ups.begin(); si != ups.end(); si++)
     set_filterable(*si);
-  
+
   // add requirements f(x1,...,xn) >= f#(x1,...,xn)
   map<string,int>::iterator it;
   for (it = arities.begin(); it != arities.end(); it++) {
@@ -845,7 +847,7 @@ bool DPOrderingProblem :: simple_argument_functions() {
   for (i = 0; i < orientedsymbols.size(); i++) {
     string f = orientedsymbols[i];
     vector<PTerm> parts;
-    // create variables x1 ... xn with n = arity(f), and form f x1 ... xn 
+    // create variables x1 ... xn with n = arity(f), and form f x1 ... xn
     vector<MetaApplication*> xs;
     PType ftype = alphabet.query_type(f);
     PTerm left = alphabet.get(f);
