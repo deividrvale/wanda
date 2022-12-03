@@ -761,7 +761,7 @@ void MonomorphicAFS :: normalise_rules() {
   normalised = true;
   normalising_took_effort = true;
 
-  wout.print("Using the transformations described in " +
+  wout.verbose_print("Using the transformations described in " +
     wout.cite("Kop11") + ", this system can be brought in a " +
     "form without leading free variables in the left-hand side, " +
     "and where the left-hand side of a variable is always a "
