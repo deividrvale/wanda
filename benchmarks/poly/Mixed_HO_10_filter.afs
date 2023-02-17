@@ -5,7 +5,7 @@ false : boolean
 true : boolean
 filter : (nat -> boolean * list) --> list
 nil : list
-0 : nat
+zero : nat
 cons : (nat * list) --> list
 consif : (boolean * nat * list) --> list
 
@@ -16,8 +16,8 @@ T : list
 
 rand(X) => X
 rand(s(X)) => rand(X)
-bool(0) => false
-bool(s(0)) => true
+bool(zero) => false
+bool(s(zero)) => true
 filter(F, nil) => nil
 filter(F, cons(H, T)) => consif(F * H, H, filter(F, T))
 consif(true, H, T) => cons(H, T)

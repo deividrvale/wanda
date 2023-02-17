@@ -1,0 +1,7 @@
+app : ((a -> a) * (a -> a) * a) --> a
+
+F : a -> a
+G : a -> a
+x : a
+
+app(F,G,x) => F * (G * x)
